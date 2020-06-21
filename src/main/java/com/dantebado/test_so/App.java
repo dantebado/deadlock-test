@@ -1,6 +1,8 @@
 package com.dantebado.test_so;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class App {
@@ -16,6 +18,8 @@ public class App {
 	}
 	
 	public static ResourceAllocation lastAllocation = null;
+	
+	public static List<List<Holder>> groups = new ArrayList<List<Holder>>();
 
     public static void main(String[] args) throws Exception {
     	
@@ -52,6 +56,24 @@ public class App {
     	holders.add(E);
     	holders.add(F);
     	
+    	Collections.shuffle(holders);
+    	
+    	if(true) {
+    		buildLists(holders);
+    		for(List<Holder> tg : groups) {    			
+    			System.out.print("[");
+    			
+    			for(int i=0 ; i<tg.size() ; i++) {
+    				System.out.print(tg.get(i).getName());
+    				if(i != tg.size()-1) {
+    					System.out.print(", ");
+    				}
+    			}
+    			
+    			System.out.println("]");
+    		}
+    	}
+    	
     	for(ExecScenario scenario : ExecScenario.values()) {
     		System.out.println("Scenario " + scenario.name());
     	
@@ -69,13 +91,13 @@ public class App {
 		    		E.getTargets().add(R2);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		F.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case TWO:
@@ -85,13 +107,13 @@ public class App {
 		    		C.getTargets().add(R2);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 
 		    		F.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case THREE:
@@ -101,13 +123,13 @@ public class App {
 		    		C.getTargets().add(R3);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		E.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case FOUR:
@@ -118,16 +140,16 @@ public class App {
 		    		F.getTargets().add(R4);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		A.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		F.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		E.addResource(R4);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case FIVE:
@@ -138,16 +160,16 @@ public class App {
 		    		C.getTargets().add(R2);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		A.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R4);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case SIX:
@@ -158,16 +180,16 @@ public class App {
 		    		C.getTargets().add(R3);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		C.addResource(R4);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		A.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 		    	case SEVEN:
@@ -181,25 +203,25 @@ public class App {
 		    		D.getTargets().add(R7);
 		    		
 		    		B.addResource(R1);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		D.addResource(R2);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		A.addResource(R3);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		C.addResource(R5);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		F.addResource(R7);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		E.addResource(R6);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		C.addResource(R4);
-		    		detectDeadlocks(holders);
+		    		detectCircularChains(holders);
 		    		
 		    		break;
 	    	}
@@ -251,23 +273,42 @@ public class App {
     	}
     }
     
-    public static void detectDeadlocks(List<Holder> holders) {
-    	Boolean detectedDeadlock = false;
-    	for(Holder h : holders) {
-    		if(h.isInDeadlock()) {
-    			System.out.println("\tHolder " + h.getName() + " is in deadlock for resource allocation " +
-						h.getDeadlockCause().getResource().getName() + " to " +
-						h.getDeadlockCause().getHolder().getName());
-    		} else if(detectDeadlockFrom(h, holders)) {
-    			System.out.println("\tHolder " + h.getName() + " is in deadlock for resource allocation " +
-    						lastAllocation.getResource().getName() + " to " +
-    						lastAllocation.getHolder().getName());
-    			detectedDeadlock = true;
+    public static void detectCircularChains(List<Holder> allHolders) {
+    	for(List<Holder> group : groups) {
+    		if(detectDeadlocks(group)) {
+    			
+    			Boolean isDeadlock = true;
+    			
+    			for(int i=1 ; i<group.size() ; i++) {
+    				if(!existsPathTo(group.get(i), group.get(i), group.get(0), group, new ArrayList<Holder>())) {
+    					isDeadlock = false;
+    				}
+    				if(!existsPathTo(group.get(0), group.get(0), group.get(i), group, new ArrayList<Holder>())) {
+    					isDeadlock = false;
+    				}
+    			}
+    			
+    			if(isDeadlock) {
+        			System.out.print("Hay deadlock en: ");        			
+        			System.out.print("[");    			
+        			for(int i=0 ; i<group.size() ; i++) {
+        				System.out.print(group.get(i).getName());
+        				if(i != group.size()-1) {
+        					System.out.print(", ");
+        				}
+        			}    			
+        			System.out.println("]");
+    			}
+    			
     		}
     	}
-    	if(detectedDeadlock) {
-    		solveDeadlockFor(lastAllocation, lastAllocation.getHolder(), holders);
+    }
+    
+    public static Boolean detectDeadlocks(List<Holder> holders) {
+    	if(detectDeadlockFrom(holders.get(0), holders)) {
+    		return true;
     	}
+    	return false;
     }
     
     public static boolean existsPathTo(Holder originalNode, Holder from, Holder to, List<Holder> holders, List<Holder> steps) {
@@ -345,4 +386,42 @@ public class App {
     	return listReturn;
     }
     
+    public static void buildLists(List<Holder> allHolders) {    	
+    	Holder[] allHoldersArray = new Holder[allHolders.size()];
+    	allHolders.toArray(allHoldersArray);
+    	
+    	for(Holder[] result : allPosibleCombinations(allHoldersArray)) {
+    		List<Holder> thisResultAsList = new ArrayList<Holder>();
+    		for(Holder h : result) {
+    			thisResultAsList.add(h);
+    		}
+    		groups.add(thisResultAsList);
+    	}    	
+    }
+    
+    static List<Holder[]> allPosibleCombinations(Holder[] arr) {
+		List<Holder[]> finalResult = new ArrayList<Holder[]>();
+		for(int i=2 ; i<=arr.length ; i++) {
+			finalResult.addAll(allCombinationsOfSize(arr, i));
+		}
+		return finalResult;
+	}
+	
+	static List<Holder[]> allCombinationsOfSize(Holder[] arr, int size) {
+		List<Holder[]> allResultsOfSize = new ArrayList<Holder[]>();
+		combinations2(arr, size, 0, new Holder[size], allResultsOfSize);
+		return allResultsOfSize;
+	}
+	
+	static void combinations2(Holder[] arr, int len, int startPosition, Holder[] currentResult, List<Holder[]> allResults){
+		if (len == 0){			
+			allResults.add(currentResult.clone());
+			return;
+		}
+		for (int i = startPosition; i <= arr.length-len; i++){
+			currentResult[currentResult.length - len] = arr[i];
+			combinations2(arr, len-1, i+1, currentResult, allResults);
+		}
+	}
+	
 }
